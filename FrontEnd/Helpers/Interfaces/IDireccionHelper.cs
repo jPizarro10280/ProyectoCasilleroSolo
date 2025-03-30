@@ -4,8 +4,8 @@ namespace FrontEnd.Helpers.Interfaces
 {
     public interface IDireccionHelper
     {
-        void Add(DireccionViewModel direccion);
-        void Update(DireccionViewModel direccion);
+        DireccionViewModel Add(DireccionViewModel direccion);
+        DireccionViewModel Update(DireccionViewModel direccion);
         void Delete(int id);
         List<DireccionViewModel> Get();
         DireccionViewModel GetByID(int id);
