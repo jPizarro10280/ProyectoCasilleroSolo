@@ -5,8 +5,8 @@ namespace BackEnd.Services.Interfaces
 {
     public interface IUsuarioService
     {
-        void AddUsuario(UsuarioDTO usuario);
-        void UpdateUsuario(UsuarioDTO usuario);
+        UsuarioDTO AddUsuario(UsuarioDTO usuario);
+        UsuarioDTO UpdateUsuario(UsuarioDTO usuario);
         void DeleteUsuario(int id);
         List<UsuarioDTO> GetUsuarios();
         UsuarioDTO GetUsuarioByID(int id);

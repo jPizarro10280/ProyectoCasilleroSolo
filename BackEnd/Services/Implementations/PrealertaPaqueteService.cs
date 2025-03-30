@@ -18,11 +18,12 @@ namespace BackEnd.Services.Implementations
         {
             return new PrealertaPaquete()
             {
-                Id=prealertaPaquete.Id,
+                Id = prealertaPaquete.Id,
                 PrealertaId = prealertaPaquete.PrealertaId,
                 PaqueteId = prealertaPaquete.PaqueteId
             };
         }
+
         PrealertaPaqueteDTO Convertir(PrealertaPaquete prealertaPaquete)
         {
             return new PrealertaPaqueteDTO()
@@ -33,17 +34,26 @@ namespace BackEnd.Services.Implementations
             };
         }
 
-        public void AddPrealertaPaquete(PrealertaPaqueteDTO prealertaPaquete)
+        public PrealertaPaqueteDTO AddPrealertaPaquete(PrealertaPaqueteDTO prealertaPaquete)
         {
-            var prealertaPaqueteEntity = Convertir(prealertaPaquete);            
-            _unidadDeTrabajo.PrealertaPaqueteDAL.Add(prealertaPaqueteEntity);
-            _unidadDeTrabajo.Complete();
+            try
+            {
+                var prealertaPaqueteEntity = Convertir(prealertaPaquete);
+                _unidadDeTrabajo.PrealertaPaqueteDAL.Add(prealertaPaqueteEntity);
+                _unidadDeTrabajo.Complete();
+                return prealertaPaquete;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
 
         public void DeletePrealertaPaquete(int id)
         {
             var prealertaPaquete = new PrealertaPaquete { Id = id };
             _unidadDeTrabajo.PrealertaPaqueteDAL.Remove(prealertaPaquete);
+            _unidadDeTrabajo.Complete();
         }
 
         public List<PrealertaPaqueteDTO> GetPrealertaPaquetes()
@@ -57,11 +67,19 @@ namespace BackEnd.Services.Implementations
             return prealertaPaquetes;
         }
 
-        public void UpdatePrealertaPaquete(PrealertaPaqueteDTO prealertaPaquete)
+        public PrealertaPaqueteDTO UpdatePrealertaPaquete(PrealertaPaqueteDTO prealertaPaquete)
         {
-            var prealertaPaqueteEntity = Convertir(prealertaPaquete);
-            _unidadDeTrabajo.PrealertaPaqueteDAL.Update(prealertaPaqueteEntity);
-            _unidadDeTrabajo.Complete();
+            try
+            {
+                var prealertaPaqueteEntity = Convertir(prealertaPaquete);
+                _unidadDeTrabajo.PrealertaPaqueteDAL.Update(prealertaPaqueteEntity);
+                _unidadDeTrabajo.Complete();
+                return prealertaPaquete;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
 
         public PrealertaPaqueteDTO GetPrealertaPaqueteByID(int id)

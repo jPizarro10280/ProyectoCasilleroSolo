@@ -6,8 +6,8 @@ namespace BackEnd.Services.Interfaces
 {
     public interface IDireccionService
     {
-        public void AddDireccion(DireccionDTO direccion);
-        public void UpdateDireccion(DireccionDTO direccion);
+        public DireccionDTO AddDireccion(DireccionDTO direccion);
+        public DireccionDTO UpdateDireccion(DireccionDTO direccion);
         public void DeleteDireccion(int id);
         public List<DireccionDTO> GetDirecciones();
         DireccionDTO GetDireccionByID(int id);

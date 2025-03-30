@@ -25,6 +25,7 @@ namespace BackEnd.Services.Implementations
                 Telefono = usuario.Telefono
             };
         }
+
         UsuarioDTO Convertir(Usuario usuario)
         {
             return new UsuarioDTO()
@@ -37,17 +38,26 @@ namespace BackEnd.Services.Implementations
             };
         }
 
-        public void AddUsuario(UsuarioDTO usuario)
+        public UsuarioDTO AddUsuario(UsuarioDTO usuario)
         {
-            var usuarioEntity = Convertir(usuario);            
-            _unidadDeTrabajo.UsuarioDAL.Add(usuarioEntity);
-            _unidadDeTrabajo.Complete();
+            try
+            {
+                var usuarioEntity = Convertir(usuario);
+                _unidadDeTrabajo.UsuarioDAL.Add(usuarioEntity);
+                _unidadDeTrabajo.Complete();
+                return usuario;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
 
         public void DeleteUsuario(int id)
         {
             var usuario = new Usuario { Id = id };
             _unidadDeTrabajo.UsuarioDAL.Remove(usuario);
+            _unidadDeTrabajo.Complete();
         }
 
         public List<UsuarioDTO> GetUsuarios()
@@ -61,11 +71,19 @@ namespace BackEnd.Services.Implementations
             return usuarios;
         }
 
-        public void UpdateUsuario(UsuarioDTO usuario)
+        public UsuarioDTO UpdateUsuario(UsuarioDTO usuario)
         {
-            var usuarioEntity = Convertir(usuario);
-            _unidadDeTrabajo.UsuarioDAL.Update(usuarioEntity);
-            _unidadDeTrabajo.Complete();
+            try
+            {
+                var usuarioEntity = Convertir(usuario);
+                _unidadDeTrabajo.UsuarioDAL.Update(usuarioEntity);
+                _unidadDeTrabajo.Complete();
+                return usuario;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
 
         public UsuarioDTO GetUsuarioByID(int id)

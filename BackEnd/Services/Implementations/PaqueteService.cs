@@ -17,14 +17,15 @@ namespace BackEnd.Services.Implementations
         Paquete Convertir(PaqueteDTO paquete)
         {
             return new Paquete()
-            {   
-                Id=paquete.Id,
+            {
+                Id = paquete.Id,
                 UsuarioId = paquete.UsuarioId,
                 FechaCreacion = paquete.FechaCreacion,
                 Estado = paquete.Estado,
                 MontoTotal = paquete.MontoTotal
             };
         }
+
         PaqueteDTO Convertir(Paquete paquete)
         {
             return new PaqueteDTO()
@@ -37,17 +38,26 @@ namespace BackEnd.Services.Implementations
             };
         }
 
-        public void AddPaquete(PaqueteDTO paquete)
+        public PaqueteDTO AddPaquete(PaqueteDTO paquete)
         {
-            var paqueteEntity = Convertir(paquete);            
-            _unidadDeTrabajo.PaqueteDAL.Add(paqueteEntity);
-            _unidadDeTrabajo.Complete();
+            try
+            {
+                var paqueteEntity = Convertir(paquete);
+                _unidadDeTrabajo.PaqueteDAL.Add(paqueteEntity);
+                _unidadDeTrabajo.Complete();
+                return paquete;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
 
         public void DeletePaquete(int id)
         {
             var paquete = new Paquete { Id = id };
             _unidadDeTrabajo.PaqueteDAL.Remove(paquete);
+            _unidadDeTrabajo.Complete();
         }
 
         public List<PaqueteDTO> GetPaquetes()
@@ -61,11 +71,19 @@ namespace BackEnd.Services.Implementations
             return paquetes;
         }
 
-        public void UpdatePaquete(PaqueteDTO paquete)
+        public PaqueteDTO UpdatePaquete(PaqueteDTO paquete)
         {
-            var paqueteEntity = Convertir(paquete);
-            _unidadDeTrabajo.PaqueteDAL.Update(paqueteEntity);
-            _unidadDeTrabajo.Complete();
+            try
+            {
+                var paqueteEntity = Convertir(paquete);
+                _unidadDeTrabajo.PaqueteDAL.Update(paqueteEntity);
+                _unidadDeTrabajo.Complete();
+                return paquete;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
 
         public PaqueteDTO GetPaqueteByID(int id)

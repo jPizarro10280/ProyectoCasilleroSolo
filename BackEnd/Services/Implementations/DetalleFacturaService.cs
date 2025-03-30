@@ -40,17 +40,26 @@ namespace BackEnd.Services.Implementations
             };
         }
 
-        public void AddDetalleFactura(DetalleFacturaDTO detalleFactura)
+        public DetalleFacturaDTO AddDetalleFactura(DetalleFacturaDTO detalleFactura)
         {
-            var detalleFacturaEntity = Convertir(detalleFactura);
-            _unidadDeTrabajo.DetalleFacturaDAL.Add(detalleFacturaEntity);
-            _unidadDeTrabajo.Complete();
+            try { 
+                var detalleFacturaEntity = Convertir(detalleFactura);
+                _unidadDeTrabajo.DetalleFacturaDAL.Add(detalleFacturaEntity);
+                _unidadDeTrabajo.Complete();
+            return detalleFactura;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+            
         }
 
         public void DeleteDetalleFactura(int id)
         {
             var detalleFactura = new DetalleFactura { Id = id };
             _unidadDeTrabajo.DetalleFacturaDAL.Remove(detalleFactura);
+            _unidadDeTrabajo.Complete();
         }
 
         public List<DetalleFacturaDTO> GetDetalleFacturas()
@@ -64,11 +73,18 @@ namespace BackEnd.Services.Implementations
             return detalleFacturas;
         }
 
-        public void UpdateDetalleFactura(DetalleFacturaDTO detalleFactura)
+        public DetalleFacturaDTO UpdateDetalleFactura(DetalleFacturaDTO detalleFactura)
         {
-            var detalleFacturaEntity = Convertir(detalleFactura);
-            _unidadDeTrabajo.DetalleFacturaDAL.Update(detalleFacturaEntity);
-            _unidadDeTrabajo.Complete();
+            try
+            {
+                var detalleFacturaEntity = Convertir(detalleFactura);
+                _unidadDeTrabajo.DetalleFacturaDAL.Update(detalleFacturaEntity);
+                _unidadDeTrabajo.Complete();
+                return detalleFactura;
+            }catch (Exception)
+            {
+                throw;
+            }
         }
 
         public DetalleFacturaDTO GetDetalleFacturaByID(int id)

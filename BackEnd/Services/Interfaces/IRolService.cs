@@ -5,8 +5,8 @@ namespace BackEnd.Services.Interfaces
 {
     public interface IRolService
     {
-        void AddRol(RolDTO rol);
-        void UpdateRol(RolDTO rol);
+        RolDTO AddRol(RolDTO rol);
+        RolDTO UpdateRol(RolDTO rol);
         void DeleteRol(int id);
         List<RolDTO> GetRoles();
         RolDTO GetRolByID(int id);

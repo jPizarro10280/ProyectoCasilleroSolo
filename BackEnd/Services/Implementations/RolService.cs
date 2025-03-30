@@ -18,10 +18,11 @@ namespace BackEnd.Services.Implementations
         {
             return new Rol()
             {
-                Id=rol.Id,
+                Id = rol.Id,
                 Nombre = rol.Nombre
             };
         }
+
         RolDTO Convertir(Rol rol)
         {
             return new RolDTO()
@@ -31,17 +32,26 @@ namespace BackEnd.Services.Implementations
             };
         }
 
-        public void AddRol(RolDTO rol)
+        public RolDTO AddRol(RolDTO rol)
         {
-            var rolEntity = Convertir(rol);            
-            _unidadDeTrabajo.RolDAL.Add(rolEntity);
-            _unidadDeTrabajo.Complete();
+            try
+            {
+                var rolEntity = Convertir(rol);
+                _unidadDeTrabajo.RolDAL.Add(rolEntity);
+                _unidadDeTrabajo.Complete();
+                return rol;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
 
         public void DeleteRol(int id)
         {
             var rol = new Rol { Id = id };
             _unidadDeTrabajo.RolDAL.Remove(rol);
+            _unidadDeTrabajo.Complete();
         }
 
         public List<RolDTO> GetRoles()
@@ -55,11 +65,19 @@ namespace BackEnd.Services.Implementations
             return roles;
         }
 
-        public void UpdateRol(RolDTO rol)
+        public RolDTO UpdateRol(RolDTO rol)
         {
-            var rolEntity = Convertir(rol);
-            _unidadDeTrabajo.RolDAL.Update(rolEntity);
-            _unidadDeTrabajo.Complete();
+            try
+            {
+                var rolEntity = Convertir(rol);
+                _unidadDeTrabajo.RolDAL.Update(rolEntity);
+                _unidadDeTrabajo.Complete();
+                return rol;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
 
         public RolDTO GetRolByID(int id)

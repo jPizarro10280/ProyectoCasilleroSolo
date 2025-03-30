@@ -19,50 +19,67 @@ namespace BackEnd.Services.Implementations
             return new UsuarioRol()
             {
                 Id = usuarioRol.Id,
-                RolId = usuarioRol.RolId,
-                UsuarioId = usuarioRol.UsuarioId
+                UsuarioId = usuarioRol.UsuarioId,
+                RolId = usuarioRol.RolId
             };
         }
+
         UsuarioRolDTO Convertir(UsuarioRol usuarioRol)
         {
             return new UsuarioRolDTO()
             {
                 Id = usuarioRol.Id,
-                RolId = usuarioRol.RolId,
-                UsuarioId = usuarioRol.UsuarioId
+                UsuarioId = usuarioRol.UsuarioId,
+                RolId = usuarioRol.RolId
             };
         }
 
-        public void AddUsuarioRol(UsuarioRolDTO usuarioRol)
+        public UsuarioRolDTO AddUsuarioRol(UsuarioRolDTO usuarioRol)
         {
-            var usuarioRolEntity = Convertir(usuarioRol);       
-            _unidadDeTrabajo.UsuarioRolDAL.Add(usuarioRolEntity);
-            _unidadDeTrabajo.Complete();
+            try
+            {
+                var usuarioRolEntity = Convertir(usuarioRol);
+                _unidadDeTrabajo.UsuarioRolDAL.Add(usuarioRolEntity);
+                _unidadDeTrabajo.Complete();
+                return usuarioRol;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
 
         public void DeleteUsuarioRol(int id)
         {
             var usuarioRol = new UsuarioRol { Id = id };
             _unidadDeTrabajo.UsuarioRolDAL.Remove(usuarioRol);
+            _unidadDeTrabajo.Complete();
         }
 
         public List<UsuarioRolDTO> GetUsuarioRoles()
         {
             var result = _unidadDeTrabajo.UsuarioRolDAL.GetAll();
-            List<UsuarioRolDTO> usuariosRol = new List<UsuarioRolDTO>();
+            List<UsuarioRolDTO> usuarioRoles = new List<UsuarioRolDTO>();
             foreach (var item in result)
             {
-                usuariosRol.Add(Convertir(item));
+                usuarioRoles.Add(Convertir(item));
             }
-            return usuariosRol;
+            return usuarioRoles;
         }
 
-
-        public void UpdateUsuarioRol(UsuarioRolDTO usuarioRol)
+        public UsuarioRolDTO UpdateUsuarioRol(UsuarioRolDTO usuarioRol)
         {
-            var usuarioRolEntity = Convertir(usuarioRol);
-            _unidadDeTrabajo.UsuarioRolDAL.Update(usuarioRolEntity);
-            _unidadDeTrabajo.Complete();
+            try
+            {
+                var usuarioRolEntity = Convertir(usuarioRol);
+                _unidadDeTrabajo.UsuarioRolDAL.Update(usuarioRolEntity);
+                _unidadDeTrabajo.Complete();
+                return usuarioRol;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
 
         public UsuarioRolDTO GetUsuarioRolByID(int id)

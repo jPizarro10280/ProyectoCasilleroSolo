@@ -27,6 +27,7 @@ namespace BackEnd.Services.Implementations
                 Estado = factura.Estado
             };
         }
+
         FacturaDTO Convertir(Factura factura)
         {
             return new FacturaDTO()
@@ -41,17 +42,26 @@ namespace BackEnd.Services.Implementations
             };
         }
 
-        public void AddFactura(FacturaDTO factura)
+        public FacturaDTO AddFactura(FacturaDTO factura)
         {
-            var facturaEntity = Convertir(factura);
-            _unidadDeTrabajo.FacturaDAL.Add(facturaEntity);
-            _unidadDeTrabajo.Complete();
+            try
+            {
+                var facturaEntity = Convertir(factura);
+                _unidadDeTrabajo.FacturaDAL.Add(facturaEntity);
+                _unidadDeTrabajo.Complete();
+                return factura;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
 
         public void DeleteFactura(int id)
         {
             var factura = new Factura { Id = id };
             _unidadDeTrabajo.FacturaDAL.Remove(factura);
+            _unidadDeTrabajo.Complete();
         }
 
         public List<FacturaDTO> GetFacturas()
@@ -65,11 +75,19 @@ namespace BackEnd.Services.Implementations
             return facturas;
         }
 
-        public void UpdateFactura(FacturaDTO factura)
+        public FacturaDTO UpdateFactura(FacturaDTO factura)
         {
-            var facturaEntity = Convertir(factura);
-            _unidadDeTrabajo.FacturaDAL.Update(facturaEntity);
-            _unidadDeTrabajo.Complete();
+            try
+            {
+                var facturaEntity = Convertir(factura);
+                _unidadDeTrabajo.FacturaDAL.Update(facturaEntity);
+                _unidadDeTrabajo.Complete();
+                return factura;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
 
         public FacturaDTO GetFacturaByID(int id)

@@ -19,7 +19,7 @@ namespace BackEnd.Services.Implementations
         {
             return new Direccion()
             {
-                Id=direccion.Id,
+                Id = direccion.Id,
                 UsuarioId = direccion.UsuarioId,
                 Linea1 = direccion.Linea1,
                 Linea2 = direccion.Linea2,
@@ -29,6 +29,7 @@ namespace BackEnd.Services.Implementations
                 Pais = direccion.Pais
             };
         }
+
         DireccionDTO Convertir(Direccion direccion)
         {
             return new DireccionDTO()
@@ -44,17 +45,26 @@ namespace BackEnd.Services.Implementations
             };
         }
 
-        public void AddDireccion(DireccionDTO direccion)
+        public DireccionDTO AddDireccion(DireccionDTO direccion)
         {
-            var direccionEntity = Convertir(direccion);
-            _unidadDeTrabajo.DireccionDAL.Add(direccionEntity);
-            _unidadDeTrabajo.Complete();
+            try
+            {
+                var direccionEntity = Convertir(direccion);
+                _unidadDeTrabajo.DireccionDAL.Add(direccionEntity);
+                _unidadDeTrabajo.Complete();
+                return direccion;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
 
         public void DeleteDireccion(int id)
         {
             var direccion = new Direccion { Id = id };
             _unidadDeTrabajo.DireccionDAL.Remove(direccion);
+            _unidadDeTrabajo.Complete();
         }
 
         public List<DireccionDTO> GetDirecciones()
@@ -68,11 +78,19 @@ namespace BackEnd.Services.Implementations
             return direcciones;
         }
 
-        public void UpdateDireccion(DireccionDTO direccion)
+        public DireccionDTO UpdateDireccion(DireccionDTO direccion)
         {
-            var direccionEntity = Convertir(direccion);
-            _unidadDeTrabajo.DireccionDAL.Update(direccionEntity);
-            _unidadDeTrabajo.Complete();
+            try
+            {
+                var direccionEntity = Convertir(direccion);
+                _unidadDeTrabajo.DireccionDAL.Update(direccionEntity);
+                _unidadDeTrabajo.Complete();
+                return direccion;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
 
         public DireccionDTO GetDireccionByID(int id)

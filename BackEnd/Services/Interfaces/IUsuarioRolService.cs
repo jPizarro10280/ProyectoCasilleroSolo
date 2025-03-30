@@ -5,8 +5,8 @@ namespace BackEnd.Services.Interfaces
 {
     public interface IUsuarioRolService
     {
-        void AddUsuarioRol(UsuarioRolDTO usuarioRol);
-        void UpdateUsuarioRol(UsuarioRolDTO usuarioRol);
+        UsuarioRolDTO AddUsuarioRol(UsuarioRolDTO usuarioRol);
+        UsuarioRolDTO UpdateUsuarioRol(UsuarioRolDTO usuarioRol);
         void DeleteUsuarioRol(int id);
         List<UsuarioRolDTO> GetUsuarioRoles();
         UsuarioRolDTO GetUsuarioRolByID(int id);
