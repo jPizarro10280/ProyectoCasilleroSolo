@@ -7,14 +7,9 @@ namespace FrontEnd.Helpers.Implementations
 {
     public class PrealertaPaqueteHelper : IPrealertaPaqueteHelper
     {
-        private readonly IServiceRepository _serviceRepository;
+        IServiceRepository _serviceRepository;
 
-        public PrealertaPaqueteHelper(IServiceRepository serviceRepository)
-        {
-            _serviceRepository = serviceRepository;
-        }
-
-        private PrealertaPaqueteViewModel Convertir(PrealertaPaqueteAPI prealertaPaquete)
+        PrealertaPaqueteViewModel Convertir(PrealertaPaqueteAPI prealertaPaquete)
         {
             return new PrealertaPaqueteViewModel()
             {
@@ -24,33 +19,78 @@ namespace FrontEnd.Helpers.Implementations
             };
         }
 
-        public void Add(PrealertaPaqueteViewModel prealertaPaquete)
+        PrealertaPaqueteAPI Convertir(PrealertaPaqueteViewModel prealertaPaquete)
         {
-            _serviceRepository.PostResponse("api/PrealertaPaquete", prealertaPaquete);
+            return new PrealertaPaqueteAPI()
+            {
+                Id = prealertaPaquete.Id,
+                PrealertaId = prealertaPaquete.PrealertaId,
+                PaqueteId = prealertaPaquete.PaqueteId
+            };
+        }
+
+        public PrealertaPaqueteHelper(IServiceRepository serviceRepository)
+        {
+            _serviceRepository = serviceRepository;
+        }
+
+        public PrealertaPaqueteViewModel Add(PrealertaPaqueteViewModel prealertaPaquete)
+        {
+            HttpResponseMessage responseMessage = _serviceRepository.PostResponse("api/PrealertaPaquete", prealertaPaquete);
+            if (responseMessage.IsSuccessStatusCode)
+            {
+                var content = responseMessage.Content.ReadAsStringAsync().Result;
+            }
+            return prealertaPaquete;
         }
 
         public void Delete(int id)
         {
-            _serviceRepository.DeleteResponse("api/PrealertaPaquete/" + id);
-        }
-
-        public List<PrealertaPaqueteViewModel> Get()
-        {
-            var response = _serviceRepository.GetResponse("api/PrealertaPaquete");
-            var prealertaPaquetes = JsonConvert.DeserializeObject<List<PrealertaPaqueteAPI>>(response.Content.ReadAsStringAsync().Result);
-            return prealertaPaquetes.Select(Convertir).ToList();
+            HttpResponseMessage responseMessage = _serviceRepository.DeleteResponse("api/PrealertaPaquete/" + id.ToString());
+            if (responseMessage != null)
+            {
+                var content = responseMessage.Content;
+            }
         }
 
         public PrealertaPaqueteViewModel GetByID(int id)
         {
-            var response = _serviceRepository.GetResponse("api/PrealertaPaquete/" + id);
-            var prealertaPaquete = JsonConvert.DeserializeObject<PrealertaPaqueteAPI>(response.Content.ReadAsStringAsync().Result);
-            return Convertir(prealertaPaquete);
+            HttpResponseMessage responseMessage = _serviceRepository.GetResponse("api/PrealertaPaquete/" + id.ToString());
+            PrealertaPaqueteAPI prealertaPaquete = new PrealertaPaqueteAPI();
+            if (responseMessage != null)
+            {
+                var content = responseMessage.Content.ReadAsStringAsync().Result;
+                prealertaPaquete = JsonConvert.DeserializeObject<PrealertaPaqueteAPI>(content);
+            }
+            PrealertaPaqueteViewModel resultado = Convertir(prealertaPaquete);
+            return resultado;
         }
 
-        public void Update(PrealertaPaqueteViewModel prealertaPaquete)
+        public List<PrealertaPaqueteViewModel> Get()
         {
-            _serviceRepository.PutResponse("api/PrealertaPaquete", prealertaPaquete);
+            HttpResponseMessage responseMessage = _serviceRepository.GetResponse("api/PrealertaPaquete");
+            List<PrealertaPaqueteAPI> prealertaPaquetes = new List<PrealertaPaqueteAPI>();
+            if (responseMessage != null)
+            {
+                var content = responseMessage.Content.ReadAsStringAsync().Result;
+                prealertaPaquetes = JsonConvert.DeserializeObject<List<PrealertaPaqueteAPI>>(content);
+            }
+            List<PrealertaPaqueteViewModel> lista = new List<PrealertaPaqueteViewModel>();
+            foreach (var item in prealertaPaquetes)
+            {
+                lista.Add(Convertir(item));
+            }
+            return lista;
+        }
+
+        public PrealertaPaqueteViewModel Update(PrealertaPaqueteViewModel prealertaPaquete)
+        {
+            HttpResponseMessage responseMessage = _serviceRepository.PutResponse("api/PrealertaPaquete", Convertir(prealertaPaquete));
+            if (responseMessage != null)
+            {
+                var content = responseMessage.Content;
+            }
+            return prealertaPaquete;
         }
     }
 }

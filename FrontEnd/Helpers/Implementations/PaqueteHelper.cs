@@ -7,14 +7,9 @@ namespace FrontEnd.Helpers.Implementations
 {
     public class PaqueteHelper : IPaqueteHelper
     {
-        private readonly IServiceRepository _serviceRepository;
+        IServiceRepository _serviceRepository;
 
-        public PaqueteHelper(IServiceRepository serviceRepository)
-        {
-            _serviceRepository = serviceRepository;
-        }
-
-        private PaqueteViewModel Convertir(PaqueteAPI paquete)
+        PaqueteViewModel Convertir(PaqueteAPI paquete)
         {
             return new PaqueteViewModel()
             {
@@ -26,33 +21,80 @@ namespace FrontEnd.Helpers.Implementations
             };
         }
 
-        public void Add(PaqueteViewModel paquete)
+        PaqueteAPI Convertir(PaqueteViewModel paquete)
         {
-            _serviceRepository.PostResponse("api/Paquete", paquete);
+            return new PaqueteAPI()
+            {
+                Id = paquete.Id,
+                UsuarioId = paquete.UsuarioId,
+                FechaCreacion = paquete.FechaCreacion,
+                Estado = paquete.Estado,
+                MontoTotal = paquete.MontoTotal
+            };
+        }
+
+        public PaqueteHelper(IServiceRepository serviceRepository)
+        {
+            _serviceRepository = serviceRepository;
+        }
+
+        public PaqueteViewModel Add(PaqueteViewModel paquete)
+        {
+            HttpResponseMessage responseMessage = _serviceRepository.PostResponse("api/Paquete", paquete);
+            if (responseMessage.IsSuccessStatusCode)
+            {
+                var content = responseMessage.Content.ReadAsStringAsync().Result;
+            }
+            return paquete;
         }
 
         public void Delete(int id)
         {
-            _serviceRepository.DeleteResponse("api/Paquete/" + id);
-        }
-
-        public List<PaqueteViewModel> Get()
-        {
-            var response = _serviceRepository.GetResponse("api/Paquete");
-            var paquetes = JsonConvert.DeserializeObject<List<PaqueteAPI>>(response.Content.ReadAsStringAsync().Result);
-            return paquetes.Select(Convertir).ToList();
+            HttpResponseMessage responseMessage = _serviceRepository.DeleteResponse("api/Paquete/" + id.ToString());
+            if (responseMessage != null)
+            {
+                var content = responseMessage.Content;
+            }
         }
 
         public PaqueteViewModel GetByID(int id)
         {
-            var response = _serviceRepository.GetResponse("api/Paquete/" + id);
-            var paquete = JsonConvert.DeserializeObject<PaqueteAPI>(response.Content.ReadAsStringAsync().Result);
-            return Convertir(paquete);
+            HttpResponseMessage responseMessage = _serviceRepository.GetResponse("api/Paquete/" + id.ToString());
+            PaqueteAPI paquete = new PaqueteAPI();
+            if (responseMessage != null)
+            {
+                var content = responseMessage.Content.ReadAsStringAsync().Result;
+                paquete = JsonConvert.DeserializeObject<PaqueteAPI>(content);
+            }
+            PaqueteViewModel resultado = Convertir(paquete);
+            return resultado;
         }
 
-        public void Update(PaqueteViewModel paquete)
+        public List<PaqueteViewModel> Get()
         {
-            _serviceRepository.PutResponse("api/Paquete", paquete);
+            HttpResponseMessage responseMessage = _serviceRepository.GetResponse("api/Paquete");
+            List<PaqueteAPI> paquetes = new List<PaqueteAPI>();
+            if (responseMessage != null)
+            {
+                var content = responseMessage.Content.ReadAsStringAsync().Result;
+                paquetes = JsonConvert.DeserializeObject<List<PaqueteAPI>>(content);
+            }
+            List<PaqueteViewModel> lista = new List<PaqueteViewModel>();
+            foreach (var item in paquetes)
+            {
+                lista.Add(Convertir(item));
+            }
+            return lista;
+        }
+
+        public PaqueteViewModel Update(PaqueteViewModel paquete)
+        {
+            HttpResponseMessage responseMessage = _serviceRepository.PutResponse("api/Paquete", Convertir(paquete));
+            if (responseMessage != null)
+            {
+                var content = responseMessage.Content;
+            }
+            return paquete;
         }
     }
 
