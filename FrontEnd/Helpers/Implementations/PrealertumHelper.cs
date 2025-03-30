@@ -7,14 +7,9 @@ namespace FrontEnd.Helpers.Implementations
 {
     public class PrealertumHelper : IPrealertumHelper
     {
-        private readonly IServiceRepository _serviceRepository;
+        IServiceRepository _serviceRepository;
 
-        public PrealertumHelper(IServiceRepository serviceRepository)
-        {
-            _serviceRepository = serviceRepository;
-        }
-
-        private PrealertumViewModel Convertir(PrealertumAPI prealertum)
+        PrealertumViewModel Convertir(PrealertumAPI prealertum)
         {
             return new PrealertumViewModel()
             {
@@ -29,33 +24,83 @@ namespace FrontEnd.Helpers.Implementations
             };
         }
 
-        public void Add(PrealertumViewModel prealertum)
+        PrealertumAPI Convertir(PrealertumViewModel prealertum)
         {
-            _serviceRepository.PostResponse("api/Prealertum", prealertum);
+            return new PrealertumAPI()
+            {
+                Id = prealertum.Id,
+                UsuarioId = prealertum.UsuarioId,
+                NumeroSeguimiento = prealertum.NumeroSeguimiento,
+                Descripcion = prealertum.Descripcion,
+                Peso = prealertum.Peso,
+                Estado = prealertum.Estado,
+                FechaCreacion = prealertum.FechaCreacion,
+                FechaActualizacion = prealertum.FechaActualizacion
+            };
+        }
+
+        public PrealertumHelper(IServiceRepository serviceRepository)
+        {
+            _serviceRepository = serviceRepository;
+        }
+
+        public PrealertumViewModel Add(PrealertumViewModel prealertum)
+        {
+            HttpResponseMessage responseMessage = _serviceRepository.PostResponse("api/Prealertum", prealertum);
+            if (responseMessage.IsSuccessStatusCode)
+            {
+                var content = responseMessage.Content.ReadAsStringAsync().Result;
+            }
+            return prealertum;
         }
 
         public void Delete(int id)
         {
-            _serviceRepository.DeleteResponse("api/Prealertum/" + id);
-        }
-
-        public List<PrealertumViewModel> Get()
-        {
-            var response = _serviceRepository.GetResponse("api/Prealertum");
-            var prealertas = JsonConvert.DeserializeObject<List<PrealertumAPI>>(response.Content.ReadAsStringAsync().Result);
-            return prealertas.Select(Convertir).ToList();
+            HttpResponseMessage responseMessage = _serviceRepository.DeleteResponse("api/Prealertum/" + id.ToString());
+            if (responseMessage != null)
+            {
+                var content = responseMessage.Content;
+            }
         }
 
         public PrealertumViewModel GetByID(int id)
         {
-            var response = _serviceRepository.GetResponse("api/Prealertum/" + id);
-            var prealertum = JsonConvert.DeserializeObject<PrealertumAPI>(response.Content.ReadAsStringAsync().Result);
-            return Convertir(prealertum);
+            HttpResponseMessage responseMessage = _serviceRepository.GetResponse("api/Prealertum/" + id.ToString());
+            PrealertumAPI prealertum = new PrealertumAPI();
+            if (responseMessage != null)
+            {
+                var content = responseMessage.Content.ReadAsStringAsync().Result;
+                prealertum = JsonConvert.DeserializeObject<PrealertumAPI>(content);
+            }
+            PrealertumViewModel resultado = Convertir(prealertum);
+            return resultado;
         }
 
-        public void Update(PrealertumViewModel prealertum)
+        public List<PrealertumViewModel> Get()
         {
-            _serviceRepository.PutResponse("api/Prealertum", prealertum);
+            HttpResponseMessage responseMessage = _serviceRepository.GetResponse("api/Prealertum");
+            List<PrealertumAPI> prealertums = new List<PrealertumAPI>();
+            if (responseMessage != null)
+            {
+                var content = responseMessage.Content.ReadAsStringAsync().Result;
+                prealertums = JsonConvert.DeserializeObject<List<PrealertumAPI>>(content);
+            }
+            List<PrealertumViewModel> lista = new List<PrealertumViewModel>();
+            foreach (var item in prealertums)
+            {
+                lista.Add(Convertir(item));
+            }
+            return lista;
+        }
+
+        public PrealertumViewModel Update(PrealertumViewModel prealertum)
+        {
+            HttpResponseMessage responseMessage = _serviceRepository.PutResponse("api/Prealertum", Convertir(prealertum));
+            if (responseMessage != null)
+            {
+                var content = responseMessage.Content;
+            }
+            return prealertum;
         }
     }
 

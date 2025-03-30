@@ -7,14 +7,9 @@ namespace FrontEnd.Helpers.Implementations
 {
     public class RolHelper : IRolHelper
     {
-        private readonly IServiceRepository _serviceRepository;
+        IServiceRepository _serviceRepository;
 
-        public RolHelper(IServiceRepository serviceRepository)
-        {
-            _serviceRepository = serviceRepository;
-        }
-
-        private RolViewModel Convertir(RolAPI rol)
+        RolViewModel Convertir(RolAPI rol)
         {
             return new RolViewModel()
             {
@@ -23,33 +18,77 @@ namespace FrontEnd.Helpers.Implementations
             };
         }
 
-        public void Add(RolViewModel rol)
+        RolAPI Convertir(RolViewModel rol)
         {
-            _serviceRepository.PostResponse("api/Rol", rol);
+            return new RolAPI()
+            {
+                Id = rol.Id,
+                Nombre = rol.Nombre
+            };
+        }
+
+        public RolHelper(IServiceRepository serviceRepository)
+        {
+            _serviceRepository = serviceRepository;
+        }
+
+        public RolViewModel Add(RolViewModel rol)
+        {
+            HttpResponseMessage responseMessage = _serviceRepository.PostResponse("api/Rol", rol);
+            if (responseMessage.IsSuccessStatusCode)
+            {
+                var content = responseMessage.Content.ReadAsStringAsync().Result;
+            }
+            return rol;
         }
 
         public void Delete(int id)
         {
-            _serviceRepository.DeleteResponse("api/Rol/" + id);
-        }
-
-        public List<RolViewModel> Get()
-        {
-            var response = _serviceRepository.GetResponse("api/Rol");
-            var roles = JsonConvert.DeserializeObject<List<RolAPI>>(response.Content.ReadAsStringAsync().Result);
-            return roles.Select(Convertir).ToList();
+            HttpResponseMessage responseMessage = _serviceRepository.DeleteResponse("api/Rol/" + id.ToString());
+            if (responseMessage != null)
+            {
+                var content = responseMessage.Content;
+            }
         }
 
         public RolViewModel GetByID(int id)
         {
-            var response = _serviceRepository.GetResponse("api/Rol/" + id);
-            var rol = JsonConvert.DeserializeObject<RolAPI>(response.Content.ReadAsStringAsync().Result);
-            return Convertir(rol);
+            HttpResponseMessage responseMessage = _serviceRepository.GetResponse("api/Rol/" + id.ToString());
+            RolAPI rol = new RolAPI();
+            if (responseMessage != null)
+            {
+                var content = responseMessage.Content.ReadAsStringAsync().Result;
+                rol = JsonConvert.DeserializeObject<RolAPI>(content);
+            }
+            RolViewModel resultado = Convertir(rol);
+            return resultado;
         }
 
-        public void Update(RolViewModel rol)
+        public List<RolViewModel> Get()
         {
-            _serviceRepository.PutResponse("api/Rol", rol);
+            HttpResponseMessage responseMessage = _serviceRepository.GetResponse("api/Rol");
+            List<RolAPI> roles = new List<RolAPI>();
+            if (responseMessage != null)
+            {
+                var content = responseMessage.Content.ReadAsStringAsync().Result;
+                roles = JsonConvert.DeserializeObject<List<RolAPI>>(content);
+            }
+            List<RolViewModel> lista = new List<RolViewModel>();
+            foreach (var item in roles)
+            {
+                lista.Add(Convertir(item));
+            }
+            return lista;
+        }
+
+        public RolViewModel Update(RolViewModel rol)
+        {
+            HttpResponseMessage responseMessage = _serviceRepository.PutResponse("api/Rol", Convertir(rol));
+            if (responseMessage != null)
+            {
+                var content = responseMessage.Content;
+            }
+            return rol;
         }
     }
 

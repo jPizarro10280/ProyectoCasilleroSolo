@@ -8,11 +8,12 @@ namespace FrontEnd.Helpers.Implementations
     public class DetalleFacturaHelper : IDetalleFacturaHelper
     {
         IServiceRepository _serviceRepository;
+
         DetalleFacturaViewModel Convertir(DetalleFacturaAPI detalleFactura)
         {
             return new DetalleFacturaViewModel()
             {
-                Id=detalleFactura.Id,
+                Id = detalleFactura.Id,
                 FacturaId = detalleFactura.FacturaId,
                 Concepto = detalleFactura.Concepto,
                 Cantidad = detalleFactura.Cantidad,
@@ -20,29 +21,47 @@ namespace FrontEnd.Helpers.Implementations
                 Subtotal = detalleFactura.Subtotal
             };
         }
+
+        DetalleFacturaAPI Convertir(DetalleFacturaViewModel detalleFactura)
+        {
+            return new DetalleFacturaAPI()
+            {
+                Id = detalleFactura.Id,
+                FacturaId = detalleFactura.FacturaId,
+                Concepto = detalleFactura.Concepto,
+                Cantidad = detalleFactura.Cantidad,
+                PrecioUnitario = detalleFactura.PrecioUnitario,
+                Subtotal = detalleFactura.Subtotal
+            };
+        }
+
         public DetalleFacturaHelper(IServiceRepository serviceRepository)
         {
             _serviceRepository = serviceRepository;
         }
 
-        public void Add(DetalleFacturaViewModel detalleFactura)
+        public DetalleFacturaViewModel Add(DetalleFacturaViewModel detalleFactura)
         {
             HttpResponseMessage responseMessage = _serviceRepository.PostResponse("api/DetalleFactura", detalleFactura);
             if (responseMessage.IsSuccessStatusCode)
             {
                 var content = responseMessage.Content.ReadAsStringAsync().Result;
             }
-            
+            return detalleFactura;
         }
 
         public void Delete(int id)
         {
-            throw new NotImplementedException();
+            HttpResponseMessage responseMessage = _serviceRepository.DeleteResponse("api/DetalleFactura/" + id.ToString());
+            if (responseMessage != null)
+            {
+                var content = responseMessage.Content;
+            }
         }
 
         public DetalleFacturaViewModel GetByID(int id)
         {
-            HttpResponseMessage responseMessage = _serviceRepository.GetResponse("api/DetalleFactura/"+id.ToString());
+            HttpResponseMessage responseMessage = _serviceRepository.GetResponse("api/DetalleFactura/" + id.ToString());
             DetalleFacturaAPI detalleFactura = new DetalleFacturaAPI();
             if (responseMessage != null)
             {
@@ -57,7 +76,7 @@ namespace FrontEnd.Helpers.Implementations
         {
             HttpResponseMessage responseMessage = _serviceRepository.GetResponse("api/DetalleFactura");
             List<DetalleFacturaAPI> detalleFacturas = new List<DetalleFacturaAPI>();
-            if(responseMessage != null)
+            if (responseMessage != null)
             {
                 var content = responseMessage.Content.ReadAsStringAsync().Result;
                 detalleFacturas = JsonConvert.DeserializeObject<List<DetalleFacturaAPI>>(content);
@@ -70,9 +89,14 @@ namespace FrontEnd.Helpers.Implementations
             return lista;
         }
 
-        public void Update(DetalleFacturaViewModel detalleFactura)
+        public DetalleFacturaViewModel Update(DetalleFacturaViewModel detalleFactura)
         {
-            throw new NotImplementedException();
+            HttpResponseMessage responseMessage = _serviceRepository.PutResponse("api/DetalleFactura", Convertir(detalleFactura));
+            if (responseMessage != null)
+            {
+                var content = responseMessage.Content;
+            }
+            return detalleFactura;
         }
     }
 }
