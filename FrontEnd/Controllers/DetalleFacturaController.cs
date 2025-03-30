@@ -12,6 +12,7 @@ namespace FrontEnd.Controllers
         {
             _detalleFacturaHelper = detalleFacturaHelper;
         }
+
         // GET: DetalleFacturaController
         public ActionResult Index()
         {
@@ -51,17 +52,19 @@ namespace FrontEnd.Controllers
         // GET: DetalleFacturaController/Edit/5
         public ActionResult Edit(int id)
         {
-            return View();
+            DetalleFacturaViewModel detalleFactura = _detalleFacturaHelper.GetByID(id);
+            return View(detalleFactura);
         }
 
         // POST: DetalleFacturaController/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
+        public ActionResult Edit(DetalleFacturaViewModel detalleFactura)
         {
             try
             {
-                return RedirectToAction(nameof(Index));
+                _detalleFacturaHelper.Update(detalleFactura);
+                return RedirectToAction("Details", new { id = detalleFactura.Id });
             }
             catch
             {
@@ -72,16 +75,18 @@ namespace FrontEnd.Controllers
         // GET: DetalleFacturaController/Delete/5
         public ActionResult Delete(int id)
         {
-            return View();
+            DetalleFacturaViewModel detalleFactura = _detalleFacturaHelper.GetByID(id);
+            return View(detalleFactura);
         }
 
         // POST: DetalleFacturaController/Delete/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
+        public ActionResult Delete(DetalleFacturaViewModel detalleFactura)
         {
             try
             {
+                _detalleFacturaHelper.Delete(detalleFactura.Id);
                 return RedirectToAction(nameof(Index));
             }
             catch
